@@ -11,9 +11,19 @@ st.title("Tourism Experience Analytics")
 
 @st.cache_data
 def get_data():
-    dfs = load_raw("data")
-    df = build_consolidated(dfs)
-    return df
+    try:
+        dfs = load_raw("data")
+        df = build_consolidated(dfs)
+        if df is None or df.empty:
+            raise ValueError("No data found. Please ensure data files are present in the `data/` folder or a small sample is committed to the repo.")
+        return df
+    except Exception as e:
+        # log the exception to the Streamlit logs for debugging
+        st.error("Data loading failed. See logs for details.")
+        # optional: show a friendly explanation
+        st.write("Error details (safe):", str(e))
+        # return an empty DataFrame so app doesn't crash completely
+        return pd.DataFrame()
 
 df = get_data()
 
